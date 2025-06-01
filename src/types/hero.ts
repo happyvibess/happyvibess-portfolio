@@ -12,6 +12,7 @@ export interface HeroProps {
   description: string;
   socialLinks: SocialLink[];
   resumeUrl: string;
-  profileImage: string;
+  profileImage?: string;
+  fallbackImage?: string;
 }
 

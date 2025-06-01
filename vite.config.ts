@@ -9,7 +9,7 @@ export default defineConfig({
       fastRefresh: false,
     }),
   ],
-  base: '/happyvibess-portfolio/',
+  base: process.env.GITHUB_PAGES ? '/happyvibess-portfolio/' : '/',
   server: {
     host: true,
     port: 5173,
@@ -28,6 +28,7 @@ export default defineConfig({
     outDir: "dist",
     sourcemap: true,
     emptyOutDir: true,
+    assetsDir: "assets",
     rollupOptions: {
       output: {
         manualChunks: {
@@ -35,7 +36,9 @@ export default defineConfig({
         },
       },
     },
+    copyPublicDir: true,
   },
+  publicDir: "public",
   optimizeDeps: {
     include: ["react", "react-dom"],
   },

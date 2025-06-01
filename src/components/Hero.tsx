@@ -21,7 +21,9 @@ const defaultProps: HeroProps = {
     { icon: FaTwitter, href: 'https://twitter.com/happyvibess', label: 'Twitter' },
   ],
   resumeUrl: '/resume.pdf',
-  profileImage: '/images/profile.jpg',
+  profileImage: 'images/profile.jpg',
+  // Used as fallback if the main image fails to load
+  fallbackImage: 'images/profile.jpg',
 };
 
 const Hero: FC<Partial<HeroProps>> = (props) => {
@@ -33,6 +35,20 @@ const Hero: FC<Partial<HeroProps>> = (props) => {
     resumeUrl,
     profileImage,
   } = { ...defaultProps, ...props };
+
+  const [imagePath, setImagePath] = useState(profileImage);
+
+  useEffect(() => {
+    const baseUrl = import.meta.env.BASE_URL || '/';
+    const newPath = `${baseUrl}${profileImage}`;
+    console.log('Image path construction:', {
+      baseUrl,
+      profileImage,
+      newPath,
+      env: import.meta.env.MODE
+    });
+    setImagePath(newPath);
+  }, [profileImage]);
 
   const typedText = useTypewriter({
     words: roles,
@@ -180,10 +196,34 @@ const Hero: FC<Partial<HeroProps>> = (props) => {
                 transition={{ type: "spring", stiffness: 300 }}
               >
                 <img
-                  src={profileImage}
+                  src={imagePath}
                   alt={`${name}'s profile`}
                   className="rounded-[32px] object-cover w-full h-full"
                   loading="eager"
+                  onLoad={(e) => {
+                    console.log('Image loaded successfully:', {
+                      src: e.currentTarget.src,
+                      imagePath,
+                      originalPath: profileImage,
+                      baseUrl: import.meta.env.BASE_URL,
+                      env: import.meta.env.MODE
+                    });
+                  }}
+                  onError={(e) => {
+                    console.error('Error loading image:', {
+                      attemptedSrc: e.currentTarget.src,
+                      imagePath,
+                      originalPath: profileImage,
+                      baseUrl: import.meta.env.BASE_URL,
+                      env: import.meta.env.MODE
+                    });
+                    const baseUrl = import.meta.env.BASE_URL || '/';
+                    const fallbackPath = `${baseUrl}${defaultProps.fallbackImage}`;
+                    if (e.currentTarget.src !== fallbackPath) {
+                      console.log('Trying fallback image:', fallbackPath);
+                      e.currentTarget.src = fallbackPath;
+                    }
+                  }}
                 />
               </motion.div>
             </div>
