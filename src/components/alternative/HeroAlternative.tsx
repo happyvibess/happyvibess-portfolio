@@ -1,4 +1,4 @@
-import { FC } from 'react';
+import { FC, useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { FaGithub, FaTwitter } from 'react-icons/fa';
 import { HiArrowDown, HiCode, HiDownload } from 'react-icons/hi';
@@ -21,7 +21,8 @@ const defaultProps: HeroProps = {
     { icon: FaTwitter, href: 'https://twitter.com/happyvibess', label: 'Twitter' },
   ],
   resumeUrl: '/resume.pdf',
-  profileImage: '/images/profile.jpg',
+  profileImage: 'images/profile.jpg',
+  fallbackImage: 'images/profile.jpg',
 };
 
 const HeroAlternative: FC<Partial<HeroProps>> = (props) => {
@@ -33,6 +34,20 @@ const HeroAlternative: FC<Partial<HeroProps>> = (props) => {
     resumeUrl,
     profileImage,
   } = { ...defaultProps, ...props };
+
+  const [imagePath, setImagePath] = useState(profileImage);
+
+  useEffect(() => {
+    const baseUrl = import.meta.env.BASE_URL || '/';
+    const newPath = `${baseUrl}${profileImage}`;
+    console.log('Alternative layout - Image path construction:', {
+      baseUrl,
+      profileImage,
+      newPath,
+      env: import.meta.env.MODE
+    });
+    setImagePath(newPath);
+  }, [profileImage]);
 
   const typedText = useTypewriter({
     words: roles,
@@ -162,10 +177,34 @@ const HeroAlternative: FC<Partial<HeroProps>> = (props) => {
               className="relative h-full rounded-[3rem] overflow-hidden border border-white/10 backdrop-blur-sm bg-gradient-to-br from-white/10 to-white/5"
             >
               <img
-                src={profileImage}
+                src={imagePath}
                 alt={`${name}'s profile`}
                 className="w-full h-full object-cover"
                 loading="eager"
+                onLoad={(e) => {
+                  console.log('Alternative layout - Image loaded successfully:', {
+                    src: e.currentTarget.src,
+                    imagePath,
+                    originalPath: profileImage,
+                    baseUrl: import.meta.env.BASE_URL,
+                    env: import.meta.env.MODE
+                  });
+                }}
+                onError={(e) => {
+                  console.error('Alternative layout - Error loading image:', {
+                    attemptedSrc: e.currentTarget.src,
+                    imagePath,
+                    originalPath: profileImage,
+                    baseUrl: import.meta.env.BASE_URL,
+                    env: import.meta.env.MODE
+                  });
+                  const baseUrl = import.meta.env.BASE_URL || '/';
+                  const fallbackPath = `${baseUrl}${defaultProps.fallbackImage}`;
+                  if (e.currentTarget.src !== fallbackPath) {
+                    console.log('Alternative layout - Trying fallback image:', fallbackPath);
+                    e.currentTarget.src = fallbackPath;
+                  }
+                }}
               />
             </motion.div>
           </motion.div>
