@@ -2,8 +2,11 @@
   "name": "dev-portfolio",
   "private": true,
   "version": "0.0.0",
+  "homepage": "https://happyvibess.github.io/happyvibess-portfolio/",
   "type": "module",
   "scripts": {
+    "predeploy": "npm run build",
+    "deploy": "gh-pages -d dist",
     "dev": "vite",
     "dev:host": "vite --host",
     "build": "tsc && vite build",
@@ -23,7 +26,8 @@
   "devDependencies": {
     "@types/react": "^18.2.15",
     "@types/react-dom": "^18.2.7",
-    "@vitejs/plugin-react": "^4.0.3",
+    "@typescript-eslint/eslint-plugin": "^6.0.0",
+    "gh-pages": "^6.0.0",
     "autoprefixer": "^10.4.14",
     "cross-env": "^7.0.3",
     "postcss": "^8.4.21",

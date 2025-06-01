@@ -9,7 +9,7 @@ export default defineConfig({
       fastRefresh: false,
     }),
   ],
-  base: "./",
+  base: '/happyvibess-portfolio/',
   server: {
     host: true,
     port: 5173,
